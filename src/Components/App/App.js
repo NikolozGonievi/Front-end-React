@@ -4,8 +4,9 @@ import SearchPanel from '../search-panel/';
 import PostList from '../post-list/';
 import AddForm from '../add-form';
 import ChangeCar from '../edit-form';
-import * as db from '../data/data';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Spinner from '../spinner';
+
+import { BrowserRouter as Router, Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 import './app.css';
 
@@ -17,13 +18,27 @@ const App = () => {
     const [changeForm, setChangeForm] = useState(false);
     const [currentCar, setCurrentCar] = useState(null);
     const [carIndex, setCarIndex] = useState(null);
+    const [serverData, setServerData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    const history = useHistory();
+
+    const request = new XMLHttpRequest();
+    const status = request.status;
 
 
     useEffect(() => {
-        const data = db.getCars()
-        console.log("db data", data)
-        setData(data)
+        request.open("GET", "http://localhost:3004/posts", false);
+        request.setRequestHeader("Content-Type", "application/json");
+        request.send();
+        /* request.onload() */
+        let json = JSON.parse(request.responseText);
+        setServerData(json);
+        responseLoad();
+        const data = json;
+        setData(data);
+        setLoading(false);
+
     }, []);
 
     const searchPost = (items, term) => {
@@ -34,46 +49,46 @@ const App = () => {
             return item.label.indexOf(term) > -1
         });
     };
+    const visiblePosts = searchPost(data, term);
+
     const onUpdateSearch = (term) => {
         setTerm(term)
-
     }
     const deleteItem = (id) => {
+        console.log("DELETE ID", id);
+        request.open("DELETE", `http://localhost:3004/posts/${id}`);
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send();
+        const status = request.status;
         const index = data.findIndex(elem => elem.id === id);
         const newArr = [...data.slice(0, index), ...data.slice(index + 1)];
 
-        return (setData(newArr))
+        return (setData([...newArr]))
     }
 
     const handleAddCar = (car) => {
         const newData = [...data, car];
-        console.log('car', car);
         setData(newData);
     }
 
     const handleAddFormClose = () => {
-        setAddForm(false)
+        setAddForm(false);
     }
 
     const handleChangeCar = (updatedCar) => {
         let tempCarArr = data;
-        console.log('updatedCar', updatedCar)
-        console.log('stateDAta', data)
         tempCarArr[carIndex] = updatedCar;
-        console.log('updated state', tempCarArr)
+
         setData([...tempCarArr]);
     }
 
     const handleChangeFormClose = () => {
-        setChangeForm(false)
+        setChangeForm(false);
     }
 
     const getCar = (curId, car) => {
         setChangeForm(true);
-        console.log('curID', curId)
-
         setCarIndex(curId);
-        console.log('INDEEEX SUKAAAAA', carIndex)
         setCurrentCar(car);
         if (addForm) {
             setAddForm(false);
@@ -94,59 +109,75 @@ const App = () => {
         setChangeForm(true);
     }
 
-    /* const allPostsCounter = data.length; */
-    const visiblePosts = searchPost(data, term);
-    
+    const responseLoad = () => {
+        if (request.readyState === 4) {
+            var status = request.status;
+            if (status === 200) {
+                console.log("response text : ", request.responseText);
+            } else {
+                document.write("server response " + request.statusText);
+            }
+        }
+    }
 
     return (
         <Router>
             <div className="app">
-                <Switch>
-                    {addForm ? (<>
-                        <Route path='/cars/new' render={(props) => (
-                            <AddForm close={() => handleAddFormClose()}
-                                handleAddCar={(car) => handleAddCar(car)}
-                                addFormStatus={addForm} />
-                        )} />
-                    </>
-                    ) : (!changeForm ? (<>
-                        <AppHeader />
-                        <div className="search-panel  ">
-                            <SearchPanel onUpdateSearch={(term) => onUpdateSearch(term)}
-                                showAddForm={handleShowAddForm}
-                                disabled={addForm || changeForm ? true : false} />
-                        </div>
-                        <Route  exact path='/cars' render={(props) => (
-                                                    
-                            <PostList data={visiblePosts}
-                                onDelete={deleteItem}
-                                getCar={(id, car) => getCar(id, car)}
-                                showChangeForm={handleShowChangeForm}
-                            />
-                        )} />
-                    </>
-                    ) : (<>
-                        <Route path='/cars/edit/:id' render={(props) => (
-                            <ChangeCar
-                                carIndex={carIndex}
-                                handleChangeCar={(updatedCar) => handleChangeCar(updatedCar)}
-                                handleChangeFormClose={() => handleChangeFormClose()}
-                                showChangeForm={handleShowChangeForm}
-                                car={currentCar}
-                            />
-                        )} />
-                        {console.log('carIndex', carIndex)}
-                        {console.log('currentCar', currentCar)}
-                    </>
-                    ))
-                    }
-                </Switch>
+                {
+                    loading ? (
+                        <Spinner />
+                    ) : (
+                        <Switch>
+
+                            {addForm ? (<>
+                                <Route path='/cars/new' render={(props) => (
+                                    <AddForm close={() => handleAddFormClose()}
+                                        handleAddCar={(car) => handleAddCar(car)}
+                                        addFormStatus={addForm} />
+                                )} />
+                            </>
+                            ) : (!changeForm ? (<>
+                                <Route path='/'>
+                                    <Redirect to='/cars' />
+                                </Route>
+                                <AppHeader />
+                                <div className="search-panel  ">
+                                    <SearchPanel onUpdateSearch={(term) => onUpdateSearch(term)}
+                                        showAddForm={handleShowAddForm}
+                                        disabled={addForm || changeForm ? true : false} />
+                                </div>
+                                <Route exact path='/cars' render={(props) => (
+                                    <PostList data={visiblePosts}
+                                        onDelete={deleteItem}
+                                        getCar={(id, car) => getCar(id, car)}
+                                        showChangeForm={handleShowChangeForm}
+                                    />
+                                )} />
+                            </>
+                            ) : (<>
+                                <Route path='/cars/edit/:id' render={(props) => (
+                                    <ChangeCar
+                                        carIndex={carIndex}
+                                        handleChangeCar={(updatedCar) => handleChangeCar(updatedCar)}
+                                        handleChangeFormClose={() => handleChangeFormClose()}
+                                        showChangeForm={handleShowChangeForm}
+                                        car={currentCar}
+                                    />
+                                )} />
+                                {console.log('carIndex', carIndex)}
+                                {console.log('currentCar', currentCar)}
+                            </>
+                            ))
+                            }
+                        </Switch>
+                    )
+                }
+
             </div>
 
         </Router>
 
     );
 }
-
 
 export default App;

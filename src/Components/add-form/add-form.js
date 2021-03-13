@@ -1,31 +1,54 @@
 import React from 'react';
-import * as db from '../data/data';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import './post-add-form.css';
 
 const AddForm = (props) => {
 
-
     const { register, handleSubmit, setValue } = useForm();
+    const history = useHistory()
+    const request = new XMLHttpRequest();
 
+    
+    const responseLoad = () => {
+        if (request.readyState === 4) {
+            var status = request.status;            
+            if (status === 200) {
+                console.log("response text : ", request.responseText);
+            } else {
+                document.write("server response " + request.statusText);
+            }
+        }
+    }
 
     const onSubmit = data => {
+        console.log('haaaa', data)
         const newData = { id: Date.now(), ...data }
-        db.addCar(newData)
+        
         props.handleAddCar(newData)
-        console.log(newData);
+        console.log('aaaaaa', newData);
+        responseLoad();
+        request.open("POST", "http://localhost:3004/posts");
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+        const json = JSON.stringify(newData);
+        request.send(json);
+        const status = request.status
+        console.log("serverStatusAddForm", status)
+        history.push('/cars')
         props.close();
     }
 
 
+
     return (
 
-        <div className='container filter-form'>
+        <div className='container filter-form'>          
+            
             <h4>მანქანის დამატება</h4>
             <hr />
             <br />
+            
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='form-group'>
                     <label htmlFor='SelectCarModel'>ავტომობილის მოდელი:</label>
@@ -35,7 +58,6 @@ const AddForm = (props) => {
                         className='ml-2'
                         onChange={e => setValue('CarModel', e.target.value)}
                         ref={register}
-                    //onChange = {e => console.log(e.target.value)}
                     >
                         <option ref={register} defaultValue="Audi" >Audi</option>
                         <option ref={register} value="BMW">BMW</option>
@@ -50,7 +72,7 @@ const AddForm = (props) => {
                     <textarea
                         name='Description'
                         onChange={e => setValue("Description", e.target.value)}
-                        // onChange = {e => console.log(e.target.value)}
+
                         ref={register}
                         id='description'
                         className='ml-2'
@@ -62,7 +84,7 @@ const AddForm = (props) => {
                     <label htmlFor='InputPictureLink'>დაამატეთ სურათის ლინკი:</label>
                     <input
                         onChange={e => setValue("PictureLink", e.target.value)}
-                        //onChange = {e => console.log(e.target.value)}
+
                         ref={register}
                         type='text'
                         className='form-control'
@@ -114,7 +136,8 @@ const AddForm = (props) => {
                         id="parkSensor"
                         name="parkSensor"
                         onChange={event => setValue('parkSensor', event.target.checked)}
-                        ref={register} />
+                        ref={register}
+                    />
                     <label htmlFor="parkSensor" className='ml-2'>პარკინგკონტროლი</label>
                     <br />
                     <input type="checkbox"
@@ -140,24 +163,20 @@ const AddForm = (props) => {
 
                 </div>
 
-                <Link to='/cars'>
-                    <button
-                        id="addButton"
-                        type='submit'
-                        className='btn btn-primary mr-1 '
-                    >
-                        დამატება
-                    </button>
-                </Link>
+                <button
+                    id="addButton"
+                    type='submit'
+                    className='btn btn-primary mr-1 '>
+                    დამატება
+                </button>
 
                 <Link to='/cars'>
                     <button
                         type='button'
                         className='btn btn-secondary '
-                        onClick={() => props.close()}
-                    >
+                        onClick={() => props.close()}>
                         დახურვა
-                </button>
+                    </button>
                 </Link>
 
 

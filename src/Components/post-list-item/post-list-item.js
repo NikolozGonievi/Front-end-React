@@ -7,8 +7,6 @@ import './post-list-item.css';
 const PostListItem = ({ CarModel, Description, PictureLink, ABS, Bluetooth, alarm, buttonWheel,
     carComp, el_window, manhole, navi, parkSensor, onDelete, showChangeForm, getCar, index, car }) => {
 
-
-
     return (
 
         <div className='app-list-item d-flex justify-content-between'>
@@ -46,28 +44,21 @@ const PostListItem = ({ CarModel, Description, PictureLink, ABS, Bluetooth, alar
                     parkSensor && <span >პარკინგკონტროლი  <br /></span>
                 }
 
-
-
-
-
-
             </div>
 
             <div className="d-flex justify-content-center align-items-center">
                 <Link to='/cars/edit/:id'>
                     <button type="button"
                         className="btn btn-primary "
-                        onClick={() => getCar(index, car)}
-                    >
+                        onClick={() => getCar(index, car)}>
                         რედაქტირება
-                </button>
+                    </button>
                 </Link>
-
 
                 <button onClick={onDelete} type="button" className="btn-trash btn-sm">
                     <i className="fa fa-trash-o"></i>
                 </button>
-                <i className="fa fa-heart"></i>
+
             </div>
         </div>
     );
