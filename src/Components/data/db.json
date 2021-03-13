@@ -1,0 +1,25 @@
+{
+  "posts": [
+    {
+      "ABS": true,
+      "Bluetooth": true,
+      "CarModel": "BMW",
+      "Description": "asdasf",
+      "PictureLink": "asfasf",
+      "alarm": true,
+      "buttonWheel": true,
+      "carComp": true,
+      "el_window": true,
+      "id": 1615639757794,
+      "manhole": true,
+      "navi": true,
+      "parkSensor": true
+    },
+    {
+
+    }
+  ],
+
+  "comments": [{ "id": 1, "body": "some comment", "postId": 1 }],
+  "profile": { "name": "typicode" }
+}
