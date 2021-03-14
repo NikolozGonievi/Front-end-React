@@ -1,10 +1,17 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useHistory } from 'react-router-dom';
+import propTypes from 'prop-types';
 
 import './post-add-form.css';
 
 const AddForm = (props) => {
+
+    AddForm.propTypes ={
+        close: propTypes.func.isRequired,
+        handleAddCar: propTypes.func.isRequired,
+        addFormStatus:propTypes.bool.isRequired
+    }
 
     const { register, handleSubmit, setValue } = useForm();
     const history = useHistory()
@@ -21,13 +28,13 @@ const AddForm = (props) => {
             }
         }
     }
-
-    const onSubmit = data => {
-        console.log('haaaa', data)
-        const newData = { id: Date.now(), ...data }
-        
-        props.handleAddCar(newData)
-        console.log('aaaaaa', newData);
+    /*
+        მოვლენა,რომლის დამუშავების  დროს ხდება ფორმაში ჩაწერილი ინფორმაციი გაგზავნა სერვერზე,
+        მონაცემების გაგზავნა App კომპონენტში და შესაბამისი ფორმის დახურვა
+    */
+    const onSubmit = data => {        
+        const newData = { id: Date.now(), ...data }        
+        props.handleAddCar(newData)        
         responseLoad();
         request.open("POST", "http://localhost:3004/posts");
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
@@ -39,16 +46,12 @@ const AddForm = (props) => {
         props.close();
     }
 
-
-
     return (
-
         <div className='container filter-form'>          
             
             <h4>მანქანის დამატება</h4>
             <hr />
-            <br />
-            
+            <br />            
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='form-group'>
                     <label htmlFor='SelectCarModel'>ავტომობილის მოდელი:</label>
@@ -84,14 +87,12 @@ const AddForm = (props) => {
                     <label htmlFor='InputPictureLink'>დაამატეთ სურათის ლინკი:</label>
                     <input
                         onChange={e => setValue("PictureLink", e.target.value)}
-
                         ref={register}
-                        type='text'
+                        type='url'
                         className='form-control'
                         id='InputPictureLink'
                         placeholder='https://'
                         name='PictureLink'
-
                     />
                 </div>
                 <div className='form-group'>
@@ -160,7 +161,6 @@ const AddForm = (props) => {
                         ref={register} />
                     <label htmlFor="buttonWheel" className='ml-2'>მულტი საჭე</label>
                     <br />
-
                 </div>
 
                 <button

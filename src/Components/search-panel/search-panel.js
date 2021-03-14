@@ -1,8 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
+import propTypes from 'prop-types'
 import './search-panel.css'
 
 const SearchPanel = (props) => {
+    
+    SearchPanel.propTypes = {
+        showAddForm: propTypes.func.isRequired
+    }
     
     return (
         <div className="d-flex">
