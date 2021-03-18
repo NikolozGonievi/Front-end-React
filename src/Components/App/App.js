@@ -1,6 +1,6 @@
 /*
    !!!!!!!!!! json-server აუცილებლად უნდა იყოს 3004-ე პორტზე 
-        შესაბამისი ბრძანება : json-server --watch scr/Components/data/db.json --port 3004
+        შესაბამისი ბრძანება : json-server --watch src/Components/data/db.json --port 3004
 */
 
 import React, { useState, useEffect } from 'react';
