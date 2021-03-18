@@ -1,10 +1,8 @@
 # Json-serverის ჩასართავად ტერმინალში ჩაწერეთ შემდეგი ბრძანება  : 
     json-server --watch src/Components/data/db.json --port 3004
 
-# აპის ჩასართავად ჩააგდეთ ფაილები ერთ დირეკტორიაში ტერმინალში ჩაწერეთ : 
-    npm install
-    npm start 
 
+  
 
 
 
