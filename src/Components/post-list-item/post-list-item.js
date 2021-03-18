@@ -17,12 +17,12 @@ const PostListItem = ({ CarModel, Description, PictureLink, ABS, Bluetooth, alar
         
     return (
 
-        <div className='app-list-item d-flex justify-content-between text-wrap'>
+        <div className='app-list-item d-flex justify-content-between text-wrap '>
 
             <div className='p-4'>
                 <span className='font-weight-bold'>მოდელი: </span> {CarModel} <br />
                 <span className='font-weight-bold'>აღწერა: </span><span> {Description} </span>  <br />
-                <span className='font-weight-bold'>სურათის ლინკი: </span> {PictureLink}   <br />
+                <span className='font-weight-bold'>სურათის ლინკი: </span><span className="w-3"> {PictureLink} </span>   <br />
                 <span className='font-weight-bold'>დამატებითი ოპციები:</span><br />
                 {
                     ABS && <span>ABS <br /></span>
